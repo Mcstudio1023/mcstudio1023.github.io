@@ -1,89 +1,620 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HTML Creator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Glassy CodeRunner | HTML/CSS/JS Playground</title>
+  <!-- Google Fonts: clean, modern sans-serif -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: Arial, sans-serif;
-      height: 100vh;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at 10% 30%, rgba(15, 25, 45, 0.95), rgba(8, 12, 24, 0.98)), 
+                  repeating-linear-gradient(45deg, rgba(70, 130, 200, 0.02) 0px, rgba(70, 130, 200, 0.02) 2px, transparent 2px, transparent 8px);
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      backdrop-filter: blur(0px);
+    }
+
+    /* Main glass container */
+    .app-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      background: rgba(18, 25, 45, 0.35);
+      backdrop-filter: blur(14px);
+      border-radius: 3rem;
+      padding: 1.8rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* header section */
+    .glass-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      gap: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .title-badge h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #FFFFFF 0%, #C0D4FF 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .title-badge p {
+      color: rgba(220, 235, 255, 0.75);
+      font-size: 0.85rem;
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    .status-pill {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(4px);
+      border-radius: 80px;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #b9d0ff;
+      border: 0.5px solid rgba(255, 255, 255, 0.2);
+      letter-spacing: 0.3px;
+    }
+
+    /* 2-COLUMN LAYOUT (glass panels) */
+    .runner-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 1.6rem;
+      margin-bottom: 1.5rem;
     }
-    textarea {
-      width: 100%;
-      height: 100%;
-      border: none;
-      outline: none;
-      padding: 12px;
-      font-family: monospace;
-      font-size: 14px;
+
+    /* shared glass card style */
+    .glass-panel {
+      background: rgba(20, 28, 45, 0.55);
+      backdrop-filter: blur(18px);
+      border-radius: 1.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      transition: all 0.2s ease;
     }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: white;
-    }
-    .topbar {
-      position: fixed;
-      top: 10px;
-      left: 10px;
+
+    .panel-header {
       display: flex;
-      gap: 10px;
-      z-index: 10;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: rgba(10, 15, 28, 0.45);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    button {
-      padding: 8px 12px;
+
+    .panel-header h3 {
+      font-weight: 500;
+      font-size: 1rem;
+      letter-spacing: 0.3px;
+      color: #eef4ff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-header span {
+      font-size: 1.2rem;
+    }
+
+    .code-editor {
+      width: 100%;
+      background: rgba(8, 12, 22, 0.7);
       border: none;
+      padding: 1.4rem;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #eef5ff;
+      resize: vertical;
+      outline: none;
+      min-height: 520px;
+      transition: background 0.2s;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .code-editor:focus {
+      background: rgba(12, 18, 32, 0.85);
+      border-left: 3px solid #7c9eff;
+    }
+
+    /* preview iframe area */
+    .preview-frame {
+      width: 100%;
+      height: 520px;
+      border: none;
+      background: #fefefe;
+      display: block;
+      border-radius: 0 0 1.2rem 1.2rem;
+    }
+
+    /* toolbar glassy buttons */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.6rem;
+      padding-top: 0.8rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .glass-btn {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.6rem 1.4rem;
+      border-radius: 2rem;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #f0f4ff;
       cursor: pointer;
-      background: #2563eb;
-      color: white;
-      border-radius: 6px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.2px;
+    }
+
+    .glass-btn-primary {
+      background: rgba(88, 130, 255, 0.65);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 2px 8px rgba(0, 80, 255, 0.2);
+    }
+
+    .glass-btn-primary:hover {
+      background: rgba(110, 150, 255, 0.8);
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .glass-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(10, 20, 35, 0.6);
+      padding: 0.3rem 1rem;
+      border-radius: 2.5rem;
+      backdrop-filter: blur(5px);
+      border: 0.5px solid rgba(255,255,240,0.2);
+    }
+
+    .toggle-group label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #bfd6ff;
+      cursor: pointer;
+    }
+
+    .auto-toggle {
+      width: 36px;
+      height: 20px;
+      appearance: none;
+      background: rgba(45, 55, 85, 0.8);
+      border-radius: 40px;
+      position: relative;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .auto-toggle:checked {
+      background: #5d8eff;
+    }
+
+    .auto-toggle::before {
+      content: '';
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 1px;
+      left: 2px;
+      transition: 0.2s;
+    }
+
+    .auto-toggle:checked::before {
+      left: 17px;
+    }
+
+    .timestamp {
+      font-size: 0.7rem;
+      color: #9bb4e0;
+      background: rgba(0,0,0,0.3);
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      letter-spacing: 0.3px;
+    }
+
+    /* responsive */
+    @media (max-width: 860px) {
+      body {
+        padding: 1rem;
+      }
+      .runner-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .code-editor, .preview-frame {
+        min-height: 420px;
+        height: auto;
+      }
+      .glass-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+    /* custom scrollbar */
+    .code-editor::-webkit-scrollbar {
+      width: 6px;
+    }
+    .code-editor::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+    }
+    .code-editor::-webkit-scrollbar-thumb {
+      background: #8fabff;
+      border-radius: 10px;
+    }
+
+    ::selection {
+      background: rgba(100, 150, 255, 0.5);
     }
   </style>
 </head>
 <body>
+<div class="app-container">
+  <div class="glass-header">
+    <div class="title-badge">
+      <h1>✦ Glassy HTML Runner</h1>
+      <p>live preview · full HTML/CSS/JS · glassmorphic interface</p>
+    </div>
+    <div class="status-pill">
+      ⚡ interactive sandbox
+    </div>
+  </div>
 
-<div class="topbar">
-  <button onclick="runCode()">Run</button>
-  <button onclick="downloadHTML()">Download</button>
+  <div class="runner-grid">
+    <!-- EDITOR PANEL (glassy) -->
+    <div class="glass-panel">
+      <div class="panel-header">
+        <h3><span>⌨️</span> Code editor</h3>
+        <span style="font-size: 0.7rem; background: rgba(255,255,255,0.1); padding: 0.2rem 0.6rem; border-radius: 20px;">HTML/CSS/JS</span>
+      </div>
+      <textarea id="codeEditor" class="code-editor" spellcheck="false"></textarea>
+    </div>
+
+    <!-- PREVIEW PANEL (glassy) -->
+    <div class="glass-panel">
+      <div class="panel-header">
+        <h3><span>🖥️</span> Live preview</h3>
+        <span style="font-size: 0.7rem;">↻ rendered in iframe</span>
+      </div>
+      <iframe id="previewFrame" class="preview-frame" title="output" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
+    </div>
+  </div>
+
+  <!-- CONTROL BAR -->
+  <div class="action-bar">
+    <div class="btn-group">
+      <button id="runBtn" class="glass-btn glass-btn-primary">▶ Run code</button>
+      <button id="resetBtn" class="glass-btn">⟳ Reset to demo</button>
+      <button id="clearBtn" class="glass-btn">🗑 Clear editor</button>
+    </div>
+    <div class="toggle-group">
+      <label for="liveToggle">✨ Live (auto-run)</label>
+      <input type="checkbox" id="liveToggle" class="auto-toggle" checked>
+    </div>
+    <div id="updateTime" class="timestamp">🔄 ready</div>
+  </div>
 </div>
 
-<textarea id="code"></textarea>
-<iframe id="preview"></iframe>
-
 <script>
-const defaultCode = `<!DOCTYPE html>
-<html>
+  // ---------- DEFAULT DEMO ----------
+  const DEFAULT_HTML = `<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>HTML Creator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glassy demo | runner magic</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(145deg, #0b1120 0%, #19233c 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      margin: 0;
+    }
+
+    .glass-demo-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(14px);
+      border-radius: 2.5rem;
+      padding: 2rem 2rem 2rem 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.2);
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #FFFFFF, #bbd4ff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .glow-text {
+      color: rgba(255,255,245,0.9);
+      margin: 1rem 0;
+      line-height: 1.4;
+      font-weight: 400;
+    }
+
+    .glass-button {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      backdrop-filter: blur(5px);
+      padding: 0.7rem 1.6rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      color: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 1rem;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .glass-button:hover {
+      background: rgba(255,255,255,0.35);
+      transform: scale(0.97);
+    }
+
+    .counter-area {
+      margin-top: 1.5rem;
+      background: rgba(0,0,0,0.25);
+      border-radius: 2rem;
+      padding: 0.8rem;
+    }
+
+    #clickCount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffec9f;
+    }
+
+    hr {
+      margin: 1rem 0;
+      border-color: rgba(255,255,255,0.2);
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello World</h1>
+  <div class="glass-demo-card">
+    <h1>✨ glass runner</h1>
+    <div class="glow-text">
+      Write HTML, CSS & JS in the left panel <br> → preview updates instantly
+    </div>
+    <button class="glass-button" id="magicBtn">✨ click me ✨</button>
+    <div class="counter-area">
+      <p style="color:#cbdfff;">interactive counter</p>
+      <div id="clickCount">0</div>
+    </div>
+    <hr />
+    <p style="font-size:0.75rem; opacity:0.7;">🌈 fully dynamic — edit and run your own code</p>
+  </div>
+  <script>
+    let counter = 0;
+    const btn = document.getElementById('magicBtn');
+    const counterDisplay = document.getElementById('clickCount');
+    if(btn) {
+      btn.addEventListener('click', () => {
+        counter++;
+        counterDisplay.innerText = counter;
+        btn.style.transform = 'scale(0.96)';
+        setTimeout(() => { if(btn) btn.style.transform = ''; }, 120);
+      });
+    }
+    // extra confetti effect? just playful
+    console.log("Glassy runner ready — happy coding!");
+  <\/script>
 </body>
 </html>`;
 
-document.getElementById('code').value = defaultCode;
+  // DOM elements
+  const editorTextarea = document.getElementById('codeEditor');
+  const previewFrame = document.getElementById('previewFrame');
+  const runBtn = document.getElementById('runBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const liveToggle = document.getElementById('liveToggle');
+  const updateTimeSpan = document.getElementById('updateTime');
 
-function runCode() {
-  const code = document.getElementById('code').value;
-  document.getElementById('preview').srcdoc = code;
-}
+  // revokable blob URL management
+  let currentBlobUrl = null;
 
-function downloadHTML() {
-  const code = document.getElementById('code').value;
-  const blob = new Blob([code], { type: 'text/html' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'index.html';
-  a.click();
-}
+  // Helper: update preview (core runner)
+  function renderPreview(code) {
+    if (!code && code !== "") {
+      code = "<!-- empty -->";
+    }
+    // revoke previous blob to avoid memory leaks
+    if (currentBlobUrl) {
+      URL.revokeObjectURL(currentBlobUrl);
+      currentBlobUrl = null;
+    }
+    try {
+      const blob = new Blob([code], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      previewFrame.src = url;
+      currentBlobUrl = url;
+      // update timestamp
+      const now = new Date();
+      updateTimeSpan.innerHTML = `🕒 rendered ${now.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', second:'2-digit' })}`;
+    } catch (err) {
+      console.warn("Preview error", err);
+      updateTimeSpan.innerHTML = `⚠️ render error — invalid code`;
+      // optional fallback: show error message in iframe
+      const errorBlob = new Blob([`<body style="background:#111;color:#ffaa88;font-family:monospace;padding:2rem;"><h3>⚠️ Invalid HTML content</h3><pre>${String(err).substring(0, 200)}</pre></body>`], { type: 'text/html' });
+      const errUrl = URL.createObjectURL(errorBlob);
+      if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+      previewFrame.src = errUrl;
+      currentBlobUrl = errUrl;
+    }
+  }
 
-runCode();
+  // run from current editor value
+  function runCurrentCode() {
+    const code = editorTextarea.value;
+    renderPreview(code);
+  }
+
+  // reset to default demo & auto-run (if live mode off still preview)
+  function resetToDemo() {
+    editorTextarea.value = DEFAULT_HTML;
+    renderPreview(DEFAULT_HTML);
+    // small UX snack: update timestamp message
+    updateTimeSpan.innerHTML = `🔄 demo restored • ready`;
+    setTimeout(() => {
+      if (!liveToggle.checked) {
+        // but we already preview on reset always
+      }
+    }, 10);
+  }
+
+  // clear editor (placeholder empty)
+  function clearEditor() {
+    editorTextarea.value = `<!-- write your HTML/CSS/JS here -->
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>My page</title><style>body{background:#f0f2f5; font-family:sans-serif;}</style></head>
+<body><h1>✨ your code</h1><p>Start building!</p></body>
+</html>`;
+    if (liveToggle.checked) {
+      runCurrentCode();
+    } else {
+      // optionally show placeholder but not auto-run
+      updateTimeSpan.innerHTML = `📝 editor cleared — press run`;
+    }
+  }
+
+  // auto-run event handler (only when live mode)
+  let liveInputHandler = null;
+
+  function setupLiveMode() {
+    if (liveInputHandler) {
+      editorTextarea.removeEventListener('input', liveInputHandler);
+      liveInputHandler = null;
+    }
+    if (liveToggle.checked) {
+      liveInputHandler = () => {
+        runCurrentCode();
+      };
+      editorTextarea.addEventListener('input', liveInputHandler);
+      // also run once to sync with current
+      runCurrentCode();
+      updateTimeSpan.innerHTML += ` ✨ live mode ON`;
+    } else {
+      // just disable live but don't automatically run
+      updateTimeSpan.innerHTML = `⏸ live mode OFF · use Run button`;
+    }
+  }
+
+  // initialize event listeners, default content
+  function init() {
+    // set default demo content
+    editorTextarea.value = DEFAULT_HTML;
+    // initial render
+    renderPreview(DEFAULT_HTML);
+    // manual run button
+    runBtn.addEventListener('click', () => {
+      runCurrentCode();
+      // if live mode is off, we still want to show timestamp update
+      if (!liveToggle.checked) {
+        updateTimeSpan.innerHTML = `⚡ manual run at ${new Date().toLocaleTimeString()}`;
+      }
+    });
+    resetBtn.addEventListener('click', resetToDemo);
+    clearBtn.addEventListener('click', clearEditor);
+    
+    // toggle live mode: add/remove input listener
+    liveToggle.addEventListener('change', () => {
+      setupLiveMode();
+      if (liveToggle.checked) {
+        // run current code immediately
+        runCurrentCode();
+      } else {
+        updateTimeSpan.innerHTML = `⏸ live disabled — use ▶ Run`;
+      }
+    });
+    
+    // initial live mode set
+    setupLiveMode();
+
+    // small extra: detect iframe load event? not necessary
+    // make sure iframe is not broken due to CSP but blob works
+    previewFrame.addEventListener('load', () => {
+      if (liveToggle.checked) {
+        // small silent feedback
+      }
+    });
+  }
+
+  // handle potential errors on initialization
+  window.addEventListener('error', (e) => {
+    // silent fallback only for internal logs
+    console.debug("global error ignored in runner UI");
+  });
+  
+  init();
 </script>
-
 </body>
 </html>
