@@ -5,310 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HTML Creator</title>
   <style>
-    :root {
-      --bg: #0b1220;
-      --panel: rgba(15, 23, 42, 0.92);
-      --panel-2: #111827;
-      --line: #243246;
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-2: #2563eb;
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-      --radius: 18px;
-    }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.18), transparent 22%),
-        linear-gradient(180deg, #08101f 0%, #0f172a 100%);
-      overflow: hidden;
-    }
-
-    .app {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      max-width: 1600px;
-      margin: 0 auto;
-      padding: 16px;
-      gap: 14px;
-    }
-
-    .header {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      backdrop-filter: blur(12px);
-    }
-
-    .title {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .title h1 {
-      margin: 0;
-      font-size: 20px;
-      letter-spacing: 0.2px;
-    }
-
-    .title p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    button {
-      border: 1px solid transparent;
-      border-radius: 12px;
-      padding: 11px 16px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    }
-
-    button:hover { transform: translateY(-1px); }
-    button:active { transform: translateY(0); }
-
-    .run-btn {
-      background: linear-gradient(180deg, #0ea5e9, #2563eb);
-      color: white;
-      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
-    }
-
-    .download-btn {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text);
-      border-color: var(--line);
-    }
-
-    .workspace {
-      flex: 1;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      min-width: 0;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .panel-top {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.03);
-      color: var(--muted);
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .badge {
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.12);
-      color: #bae6fd;
-      border: 1px solid rgba(56, 189, 248, 0.18);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    textarea {
-      width: 100%;
-      flex: 1;
-      border: none;
-      outline: none;
-      resize: none;
-      background: #08101f;
-      color: #e2e8f0;
-      padding: 18px;
-      font-size: 14px;
-      line-height: 1.6;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      tab-size: 2;
-    }
-
-    iframe {
-      width: 100%;
-      flex: 1;
-      border: none;
-      background: white;
-    }
-
-    .footer {
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-      padding: 2px 0 0;
-    }
-
-    @media (max-width: 900px) {
-      body { overflow: auto; }
-      .app { height: auto; min-height: 100%; }
-      .workspace { grid-template-columns: 1fr; }
-      .panel { min-height: 52vh; }
-    }
-  </style>
-</head>
-<body>
-  <div class="app">
-    <div class="header">
-      <div class="title">
-        <h1>HTML Creator</h1>
-        <p>Write HTML on the left, see it live on the right.</p>
-      </div>
-      <div class="actions">
-        <button class="run-btn" onclick="runCode()">Run</button>
-        <button class="download-btn" onclick="downloadHTML()">Download</button>
-      </div>
-    </div>
-
-    <div class="workspace">
-      <section class="panel">
-        <div class="panel-top">
-          <span>Editor</span>
-          <span class="badge">HTML / CSS / JS</span>
-        </div>
-        <textarea id="code" spellcheck="false"></textarea>
-      </section>
-
-      <section class="panel">
-        <div class="panel-top">
-          <span>Preview</span>
-          <span class="badge">Live Result</span>
-        </div>
-        <iframe id="preview" sandbox="allow-scripts allow-forms allow-modals allow-popups"></iframe>
-      </section>
-    </div>
-
-    
-  </div>
-
-  <script>
-    const defaultCode = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HTML Creator</title>
-  <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      min-height: 100vh;
+      height: 100vh;
       display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #eff6ff, #eef2ff);
-      color: #111827;
+      grid-template-columns: 1fr 1fr;
     }
-    .card {
+    textarea {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
       background: white;
-      padding: 32px;
-      border-radius: 20px;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
-      max-width: 520px;
-      width: calc(100% - 32px);
-      text-align: center;
     }
-    h1 {
-      margin: 0 0 10px;
-      font-size: 40px;
+    .topbar {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
     }
-    p {
-      margin: 0;
-      font-size: 18px;
-      color: #4b5563;
-    }
-    .btn {
-      display: inline-block;
-      margin-top: 18px;
-      padding: 12px 18px;
-      border-radius: 12px;
+    button {
+      padding: 8px 12px;
+      border: none;
+      cursor: pointer;
       background: #2563eb;
       color: white;
-      text-decoration: none;
-      font-weight: bold;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Hello</h1>
-    <p>This is your HTML Creator.</p>
-    <a class="btn" href="#">Click Me</a>
-  </div>
+
+<div class="topbar">
+  <button onclick="runCode()">Run</button>
+  <button onclick="downloadHTML()">Download</button>
+</div>
+
+<textarea id="code"></textarea>
+<iframe id="preview"></iframe>
+
+<script>
+const defaultCode = `<!DOCTYPE html>
+<html>
+<head>
+  <title>HTML Creator</title>
+</head>
+<body>
+  <h1>Hello World</h1>
 </body>
 </html>`;
 
-    const editor = document.getElementById('code');
-    const preview = document.getElementById('preview');
-    editor.value = defaultCode;
+document.getElementById('code').value = defaultCode;
 
-    function runCode() {
-      preview.srcdoc = editor.value;
-    }
+function runCode() {
+  const code = document.getElementById('code').value;
+  document.getElementById('preview').srcdoc = code;
+}
 
-    function downloadHTML() {
-      const blob = new Blob([editor.value], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'index.html';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
+function downloadHTML() {
+  const code = document.getElementById('code').value;
+  const blob = new Blob([code], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'index.html';
+  a.click();
+}
 
-    editor.addEventListener('keydown', (e) => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = editor.selectionStart;
-        const end = editor.selectionEnd;
-        editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
-        editor.selectionStart = editor.selectionEnd = start + 2;
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-        e.preventDefault();
-        runCode();
-      }
-    });
+runCode();
+</script>
 
-    runCode();
-  </script>
 </body>
 </html>
